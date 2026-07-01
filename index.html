@@ -1,63 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Will You Go Out With Me?</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
     <style>
-        body { text-align: center; font-family: 'Arial', sans-serif; background: #ffe6e6; transition: background 1s; padding-top: 100px; height: 100vh; margin: 0; }
-        #no-btn { position: absolute; padding: 10px 20px; }
-        .page { margin-top: 50px; }
+        body { font-family: 'Poppins', sans-serif; background: #fdf2f2; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        .card { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; width: 350px; transition: 0.5s; }
+        .icon { font-size: 50px; color: #ff6b6b; margin-bottom: 20px; }
+        button { border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-weight: 600; margin: 10px; transition: 0.3s; }
+        .btn-yes { background: #ff6b6b; color: white; }
+        .btn-no { background: #eee; position: absolute; }
         .hidden { display: none; }
-        button { padding: 15px 30px; font-size: 18px; cursor: pointer; }
+        input, select { padding: 10px; border-radius: 10px; border: 1px solid #ddd; width: 100%; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div id="main-page" class="page">
-    <h1>Will you go out with me?</h1>
-    <button onclick="showNext()">Yes</button>
-    <button id="no-btn" onmouseover="moveButton()">No</button>
-</div>
+<div class="card" id="card">
+    <div id="step1">
+        <div class="icon"><i class="fa-solid fa-heart"></i></div>
+        <h2>Will you be my date?</h2>
+        <button class="btn-yes" onclick="next(2)">Yes</button>
+        <button id="no-btn" class="btn-no" onmouseover="move()">No</button>
+    </div>
 
-<div id="selection-page" class="page hidden">
-    <h3>What do you want to do?</h3>
-    <select id="activity" style="padding: 10px; font-size: 16px;">
-        <option value="Movie">Movie</option>
-        <option value="Food">Food</option>
-        <option value="Ride">Ride</option>
-    </select>
-    <br><br>
-    <label>Pick a date (within 1 week):</label><br>
-    <input type="date" id="datePicker" style="padding: 10px; margin: 10px;">
-    <br><br>
-    <button onclick="showFinal()">Confirm</button>
-</div>
+    <div id="step2" class="hidden">
+        <div class="icon"><i class="fa-solid fa-calendar-check"></i></div>
+        <h3>Choose your adventure</h3>
+        <select id="activity">
+            <option value="Movie">🎬 Movie Night</option>
+            <option value="Food">🍽️ Dinner Date</option>
+            <option value="Ride">🚲 Sunset Ride</option>
+        </select>
+        <button class="btn-yes" style="margin-top:20px;" onclick="next(3)">Next</button>
+    </div>
 
-<div id="final-page" class="page hidden">
-    <h1 id="message">Thank you! Can't wait! ❤️</h1>
+    <div id="step3" class="hidden">
+        <div class="icon"><i class="fa-solid fa-clock"></i></div>
+        <h3>When should we go?</h3>
+        <input type="date" id="datePicker">
+        <button class="btn-yes" style="margin-top:20px;" onclick="finish()">Confirm</button>
+    </div>
+
+    <div id="step4" class="hidden">
+        <div class="icon" style="animation: pop 0.5s;"><i class="fa-solid fa-face-kiss-wink-heart"></i></div>
+        <h2 id="finalText">Yay! See you soon!</h2>
+    </div>
 </div>
 
 <script>
-    function moveButton() {
-        const btn = document.getElementById('no-btn');
-        btn.style.top = Math.random() * 80 + '%';
-        btn.style.left = Math.random() * 80 + '%';
+    function move() {
+        const b = document.getElementById('no-btn');
+        b.style.top = Math.random() * 80 + '%';
+        b.style.left = Math.random() * 80 + '%';
     }
-
-    function showNext() {
-        document.getElementById('main-page').classList.add('hidden');
-        document.getElementById('selection-page').classList.remove('hidden');
-        
-        const today = new Date();
-        const nextWeek = new Date();
-        nextWeek.setDate(today.getDate() + 7);
-        document.getElementById('datePicker').min = today.toISOString().split('T')[0];
-        document.getElementById('datePicker').max = nextWeek.toISOString().split('T')[0];
+    function next(step) {
+        document.querySelectorAll('.card > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('step' + step).classList.remove('hidden');
+        if(step == 3) {
+            const today = new Date();
+            const week = new Date(); week.setDate(today.getDate() + 7);
+            document.getElementById('datePicker').min = today.toISOString().split('T')[0];
+            document.getElementById('datePicker').max = week.toISOString().split('T')[0];
+        }
     }
-
-    function showFinal() {
-        document.getElementById('selection-page').classList.add('hidden');
-        document.getElementById('final-page').classList.remove('hidden');
-        document.body.style.background = "linear-gradient(45deg, #ff9a9e, #fad0c4)";
+    function finish() {
+        const act = document.getElementById('activity').value;
+        const date = document.getElementById('datePicker').value;
+        if(!date) { alert("Please pick a date!"); return; }
+        document.getElementById('finalText').innerText = `Can't wait for our ${act} on ${date}!`;
+        next(4);
+        document.body.style.background = "#ffafbd";
     }
 </script>
 </body>
